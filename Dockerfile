@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 FROM python:3-slim AS build-env
-COPY . /app
+COPY ./python_app /app
 WORKDIR /app
 
 FROM gcr.io/distroless/python3
