@@ -1,12 +1,10 @@
 services:
-  web:
+  boomline:
     build: .
-    ports:
-      - "8000:5000"
+    tty: true
+    stdin_open: true
     develop:
       watch:
         - action: sync
           path: .
           target: /code
-  redis:
-    image: "redis:alpine"

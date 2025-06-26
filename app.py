@@ -1,22 +1,42 @@
 import time
-import redis
-from flask import Flask
 
-app = Flask(__name__)
-cache = redis.Redis(host='redis', port=6379)
-
-def get_hit_count():
-    retries = 5
+def main():
+    counter = 10
     while True:
-        try:
-            return cache.incr('hits')
-        except redis.exceptions.CennectionError as exc:
-            if retries == 0:
-                raise exc
-            retries -= 1
-            time.sleep(0.5)
+        print("\x1b[2J\x1b[H")
+        if counter > 0:
+            if counter == 10:
+                punctuation = '...'
+            elif counter > 6:
+                punctuation = '....'
+            elif counter > 3:
+                punctuation = '...!'
+            elif counter == 3:
+                punctuation = '..!!'
+            elif counter == 2:
+                punctuation = '.!!!'
+            else :
+                punctuation = '!!!!'
 
-@app.route('/')
-def hello():
-    count = get_hit_count()
-    return f'ZGHJK! I have been seen {count} times.\n'
+            print(f'{counter}{punctuation}')
+
+            counter -= 1
+            time.sleep(1)
+        else:
+            print('                               _.-^^---....,,--                                ')
+            print('                           _--                  --_                            ')
+            print('                          <                        >)                          ')
+            print('                          |                         |                          ')
+            print('                           \._                   _./                           ')
+            print("                              ```--. . , ; .--'''                              ")
+            print('                                    | |   |                                    ')
+            print('                                 .-=||  | |=-.                                 ')
+            print("                                 `-=#$%&%$#=-'                                 ")
+            print("                                    | ;  :|                                    ")
+            print("________________________________.,-#%&$@%#&#~,.________________________________")
+            counter = 10
+            time.sleep(9)
+        
+
+if __name__ == "__main__":
+    main()
