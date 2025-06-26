@@ -9,6 +9,7 @@ Meandering through the container jungle, meeting the Docker beast and becoming a
 
 ## Current state
 I've managed to create a simple python app in a container that writes some silly stuff to the terminal without having a built in shell.
+The Dockerfile and related sources are located in `/unenterable_container` if you want to try out the image.
 
 ## Next step
 Understanding the format of a container, seeing if I can inhibit the inherent "inspectability" of a docker image, and learning about linux namespaces
