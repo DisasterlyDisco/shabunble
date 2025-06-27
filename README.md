@@ -30,7 +30,7 @@ python app.py
 And if we have any other tools we want to use, we can add them as part of the mounted injection directory.
 
 ## Next step
-Seeing if I can inhibit the inherent "inspectability" of a docker image.
+Looking into confidential computing.
 
 
 #### A log, I guess
