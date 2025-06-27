@@ -1,0 +1,10 @@
+services:
+  boomline:
+    build: .
+    tty: true
+    stdin_open: true
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /code
