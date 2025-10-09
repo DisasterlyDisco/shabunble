@@ -1,0 +1,13 @@
+services:
+  shellless_classifier:
+    build:
+      context: ../
+      dockerfile: ./shellless/Dockerfile
+    network_mode: "host"
+    tty: true
+    stdin_open: true
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /code

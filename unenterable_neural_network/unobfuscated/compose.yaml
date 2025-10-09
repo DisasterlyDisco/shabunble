@@ -1,0 +1,13 @@
+services:
+  unobfuscated_classifier:
+    build:
+      context: ../
+      dockerfile: ./unobfuscated/Dockerfile
+    network_mode: "host"
+    tty: true
+    stdin_open: true
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /code

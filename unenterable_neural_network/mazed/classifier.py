@@ -8,7 +8,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-PATH = './cifar_net.pth'
+PATH = '/deepest/darkest/depth/cifar_net.pth'
 
 def point_to_tensor(record):
     image_array = np.zeros((3, 32, 32), dtype=np.float32)
