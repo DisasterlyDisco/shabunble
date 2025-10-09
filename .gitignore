@@ -1,2 +1,4 @@
 inspectable_container/**
 !inspectable_container/method_to_the_madness.md
+unenterable_neural_network/config.ini
+unenterable_neural_network/data/**

@@ -1,0 +1,13 @@
+services:
+  classifier:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    network_mode: "host"
+    tty: true
+    stdin_open: true
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /code
