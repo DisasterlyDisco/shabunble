@@ -8,9 +8,9 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./classifier.py /app/
-COPY ./cifar_net.pth /app/
-COPY ./config.ini /app/
+COPY ../classifier.py /app/
+COPY ../cifar_net.pth /app/
+COPY ../config.ini /app/
 
 FROM gcr.io/distroless/python3-debian12
 
