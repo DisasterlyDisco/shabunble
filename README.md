@@ -10,6 +10,40 @@ But I also believe that we don't truly have to make the code uninspectable, just
 
 Thus, my current proposal while I look for something stronger.
 
+## A guide to make them stumble with shabunble
+One of the most common ways to enter and inspect a docker container is to simply shell into it. So we want to make that hard to do.
+
+We'll be taking advantage of the fact that docker images can be build in [multiple stages](https://docs.docker.com/build/building/multi-stage/) to build our app in a tool-rich environment and deploy it in a tool-sparse environment, ideally an environment without a shell.
+
+(If the shell is an important part of your application - if it is dependent on shell scripts at runtime for example - then we'll just ensure that all of the other shell conveniences - like f.x. "cd", "ls", "find" or "grep" - aren't present.)
+
+Doing this is a simple 3 step process:
+**1 -** Determine the minimal image needed to build the application.
+**2 -** Determine the minimal image needed to *deploy* the application.
+**3 -** Write a docker file that first builds the application in the build image, then copies it over to the deployment image and sets the entrypoint there.
+
+To show what I mean by this, let us start out with a very basic example, and afterwards follow that up with a more meaty example.
+
+### *Basic example*
+I have a [small python app](enterable_container/python_app/app.py) that runs in the terminal. It counts down from 10 and then shows some ascii art. It has no real dependencies other than python itself. To deploy I "naïvely" made a simple [dockerfile](enterable_container/Dockerfile) that builds ontop of the [python:3-slim](https://hub.docker.com/layers/library/python/3-slim/images/sha256-c0634a83210c540f4972cbc3e8a7baa6868a4d0fc019d44a2f74f28abe0d0a89) image.
+
+So, **first step**, what is the minimal image that I need to build this app? well, there isn't much building actually happening as all the dockerfile does is copy the python script from the host machine. But, the current base image certainly is capable of being copied to, and keeping this part minimal is more for the sake of keeping the total image small, so I'm sticking with my already known image, python:3-slim, as the build image.
+
+In general, if you already have a working (single stage) docker container, that containers base image will work as your build image.
+
+For the **second step** I know that my app requires nothing more than a python interpreter, and a place for sys.stdout to point to. python:3-slim has that, but it also has a lot of other unnecessary "cruft" like the shell we would rather be without. We need something slimmer. Something less than what is usually distributed.
+
+Well, it just so happens that Google creates and maintains a repository of [distroless](https://github.com/GoogleContainerTools/distroless) container images, which are designed to run a singular app and nothing else. They have a variety of images for different usecases, one of which is just running a python app. This [image](gcr.io/distroless/python3) is what I'll be using as my *deployment* image.
+
+Finally, the **third step** is quite trivial in this case; the second deployment image is added to the dockerfile from before, all files from the build stage is copied to the deployment stage, and the app is still set as the entrypont (although the syntax is [subtly different](https://github.com/GoogleContainerTools/distroless?tab=readme-ov-file#entrypoints) as the entrypoint is executed without a shell).
+
+Thus we have our ["unenterable" dockerfile](unenterable_container/Dockerfile)!
+
+Now, in this basic example, there was next to nothing to the third step. In truth both it and the build stage could have been entirely omitted by just copying the app directly from the host system to the deployment stage. In most real cases, this would have proven a bit more envolved. To show this, let us go to the more meaty example.
+
+### *More meaty example*
+I again have a [python app](unenterable_neural_network/classifier.py), but this one contains a neural network and depends on both pytorch and...[TODO - continue meaty example]
+
 ## The Practical Proposal
 Docker images contain all the files needed to run a program along with meatadata describing how the image should be instantiated. When instantiating the image, a user can choose to overwrite the defaults set by this metadata, letting them run other code present in the image. This is useful if a user wants to inspect the image as they can instantiate it with a shell and do all the tasks that one normally would be able to when shelled into a computer.
 
