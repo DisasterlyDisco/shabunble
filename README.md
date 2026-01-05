@@ -2,6 +2,7 @@
 Shareable unenterable docker images
 
 - [What is this?](#what-is-this)
+- [Quick Start Guide](#quick-start-guide)
 - [Step by step guide](#a-guide-to-make-them-stumble-with-shabunble)
   - [Basic example](#basic-example)
   - [Extended example](#more-meaty-example)
@@ -19,6 +20,56 @@ If the computer can calculate it, it is part of the computers whole computation.
 But I also believe that we don't truly have to make the code uninspectable, just sufficiently hard to inspect. Novel solutions like fully homomorphic encryption or specialised confidential computing hardware might deter even the highly motivated. But in most cases we should be able to get away with utilizing the notion of opagueness mentioned earlier. If we just make it slightly harder to inspect the code at the expected level of asbtraction, then I expect that we'll stymie a good portion of unwanted inspections.
 
 Thus, my current proposal while I look for something stronger.
+
+## Quick Start Guide
+
+Create Docker containers that discourage casual inspection using multi-stage builds:
+
+### Step 1: Build in a Full Environment
+
+Use a standard image with all development tools:
+
+```dockerfile
+FROM python:3-slim AS build-env
+COPY ./app /app
+WORKDIR /app
+```
+
+### Step 2: Deploy in a Minimal Environment
+
+Copy only what's needed to a distroless image:
+
+```dockerfile
+FROM gcr.io/distroless/python3
+COPY --from=build-env /app /app
+WORKDIR /app
+CMD ["app.py"]
+```
+
+### Step 3: Handle Dependencies (if needed)
+
+For Python packages, use a virtual environment:
+
+```dockerfile
+# In build stage
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install -r requirements.txt
+
+# In deployment stage, copy the venv
+COPY --from=build-env /opt/venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+ENV PYTHONPATH="/opt/venv/lib/python3.11/site-packages"
+```
+
+### Step 4: Build and Run
+
+```bash
+docker build -t myapp .
+docker run -t myapp
+```
+
+**Note**: These techniques create "speed bumps" not security. See the detailed guide below for limitations.
 
 ## A guide to make them stumble with shabunble
 One of the most common ways to enter and inspect a docker container is to simply shell into it. So we want to make that hard to do.
